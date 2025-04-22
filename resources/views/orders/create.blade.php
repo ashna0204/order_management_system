@@ -1,0 +1,147 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <form action="{{ route('orders.store') }}" method="POST">
+        @csrf
+       <div class="form-group">
+    <label for="customer_id">Select Customer</label>
+    <select name="customer_id" id="customer-select" class="form-control" required>
+        <option value="">-- Select Customer --</option>
+        @foreach($customers as $customer)
+            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+        @endforeach
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="address">Customer Address</label>
+    <textarea class="form-control" name="address" id="customer-address" rows="3" required readonly></textarea>
+</div>
+
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" class="form-control" name="date" required>
+        </div>
+        <h4>Order Items</h4>
+        <table class="table table-dark table-striped" id="orderTable">
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button type="button" id="addItem" class="btn btn-secondary">Add Item</button>
+        <h5>Total Price: <span id="totalPrice">0</span></h5>
+        <button type="submit" class="btn btn-success">Submit Order</button>
+    </form>
+</div>
+
+<script>
+let counter = 1;
+const products = @json($products);
+
+document.getElementById('addItem').addEventListener('click', function() {
+    const table = document.querySelector('#orderTable tbody');
+    const row = document.createElement('tr');
+
+  let productOptions = products.map(p =>
+    `<option value="${p.id}" data-price="${p.price}" data-image="${p.image_url}">${p.name}</option>`
+).join('');
+
+row.innerHTML = `
+    <td>${counter}</td>
+    <td>
+        <select name="products[]" class="form-control product-select">
+            <option value="">-- Select Product --</option>
+            ${productOptions}
+        </select>
+        </td>
+        <td>
+        <img src="" class="product-preview mt-2" style="display:none; max-width: 60px;">
+  
+    </td>
+    <td><input type="number" name="quantities[]" class="form-control quantity" min="1" value="1"></td>
+    <td class="price">0</td>
+    <td class="total">0</td>
+    <td><button type="button" class="btn btn-danger delete-row">Delete</button></td>
+`;
+
+
+    table.appendChild(row);
+    counter++;
+    updatePrices();
+});
+
+document.addEventListener('change', updatePrices);
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-row')) {
+        e.target.closest('tr').remove();
+        updatePrices();
+    }
+});
+
+function updatePrices() {
+    let totalPrice = 0;
+    document.querySelectorAll('#orderTable tbody tr').forEach(row => {
+        const select = row.querySelector('.product-select');
+        const quantity = row.querySelector('.quantity').value;
+
+        const selectedOption = select.options[select.selectedIndex]; // ✅ You were missing this line
+        const price = parseFloat(selectedOption.dataset.price || 0);
+        const total = price * quantity;
+
+        // Update image
+        const image = selectedOption.dataset.image;
+        const imgTag = row.querySelector('.product-preview');
+        if (image) {
+            imgTag.src = image;
+            imgTag.style.display = 'block';
+        } else {
+            imgTag.style.display = 'none';
+        }
+
+        row.querySelector('.price').innerText = price.toFixed(2);
+        row.querySelector('.total').innerText = total.toFixed(2);
+        totalPrice += total;
+    });
+
+    document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+}
+
+</script>
+
+
+<script>
+$(document).ready(function () {
+    $('#customer-select').on('change', function () {
+        const customerId = $(this).val();
+
+        if (customerId) {
+            $.ajax({
+                url: `/customers/${customerId}`,
+                method: 'GET',
+                success: function (response) {
+                    $('#customer-address').val(response.address);
+                },
+                error: function () {
+                    $('#customer-address').val('');
+                    alert('Could not fetch customer address');
+                }
+            });
+        } else {
+            $('#customer-address').val('');
+        }
+    });
+});
+</script>
+
+@endsection
