@@ -1,2 +1,6 @@
 *
 !.gitignore
+
+/public/storage/
+/storage/app/public/temp/
+/storage/app/public/products/

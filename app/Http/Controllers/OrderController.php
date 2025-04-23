@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use App\Models\Image;
+
 
 class OrderController extends Controller
 {
@@ -127,6 +131,43 @@ class OrderController extends Controller
        
     }
 
+        
+public function productStore(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'price' => 'required|numeric',
+        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
+    ]);
+
+    //upload functionality
+    $image = $request->file('image');
+    //generate unique image name
+    $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+    // Move original file temporarily
+    $tempPath = storage_path('app/public/temp/' . $imageName);
+    $image->move(dirname($tempPath), $imageName);
+
+    //create new manager instance
+    $imageManager = new ImageManager(new Driver());
+    // Reading the image from local dir & Resize and move to final destination
+    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
+    $resizedImage->save(public_path('storage/products/' . $imageName));
+
+    // Remove temp file (optional)
+    unlink($tempPath);
+
+    Product::create([
+        'name' => $request->name,
+        'price' => $request->price,
+        'image' => 'products/' . $imageName,
+    ]);
+
+    return redirect()->route('products.show')->with('success', 'Product added successfully');
+}
+
+
         public function productShow(){
 
             $products= Product::simplepaginate(8);
@@ -135,13 +176,16 @@ class OrderController extends Controller
         }
 
         public function productEdit($id){
-            $product = Product::findOrFail($id); // Assuming Product model
-    return view('products.edit', compact('product'));
+            $product = Product::findOrFail($id); 
+    
+            return view('products.edit', compact('product'));
 
 
         }
-        public function productUpdate(Request $request, $id)
-{
+
+
+ public function productUpdate(Request $request, $id)
+    {
     $product = Product::findOrFail($id);
 
     $product->name = $request->name;
@@ -153,13 +197,35 @@ class OrderController extends Controller
             Storage::delete('public/' . $product->image);
         }
 
-        $imagepath = $request->file('image')->store('products', 'public');
-        $product->image = $imagepath;
+         $request->validate([
+        'name' => 'required',
+        'price' => 'required|numeric',
+        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
+    ]);
+
+    //upload functionality
+    $image = $request->file('image');
+    //generate unique image name
+    $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+    // Move original file temporarily
+    $tempPath = storage_path('app/public/temp/' . $imageName);
+    $image->move(dirname($tempPath), $imageName);
+
+    //create new manager instance
+    $imageManager = new ImageManager(new Driver());
+    // Reading the image from local dir & Resize and move to final destination
+    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
+    $resizedImage->save(public_path('storage/products/' . $imageName));
+
+    // Remove temp file (optional)
+    unlink($tempPath);
+    $product->image = 'products/' . $imageName;
     }
 
     $product->save();
 
-    return redirect()->back()->with('success', 'Product updated successfully');
+    return redirect()->route('products.show')->with('success', 'Product updated successfully');
 }
 
 
@@ -169,24 +235,7 @@ class OrderController extends Controller
         return redirect()->back()->with('success','product deleted successfully');
     }
     
-    public function productStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'image' => 'nullable|image|max:2048',
-        ]);
 
-        $data = $request->only(['name', 'price']);
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
-
-        Product::create($data);
-
-        return redirect()->route('products.show')->with('success', 'Product added successfully');
-    }
 
 public function getImageUrlAttribute()
 {

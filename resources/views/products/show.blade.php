@@ -7,11 +7,21 @@
     @foreach($products as $product)
     <div class="col-md-3 mb-3 d-flex">
         <div class="card w-100">
-    @if($product->image)
-  <img class="card-img-top" src="{{asset('storage/' .$product->image)}}" alt="Card image cap">
-  @else
-  <img class="card-img-top" src="{{asset('images/default')}}" alt="card image">
-  @endif
+   @if($product->image)
+            <img 
+                src="{{ asset('storage/' . $product->image) }}" 
+                alt="{{ $product->name }}" 
+                class="img-fluid rounded-top" 
+                loading="lazy"
+                style="object-fit: cover; aspect-ratio: 1/1;">
+        @else
+            <img 
+                src="{{ asset('images/default.jpg') }}" 
+                alt="Default image" 
+                class="img-fluid rounded-top" 
+                loading="lazy"
+                style="object-fit: cover; aspect-ratio: 1/1;">
+        @endif
   <div class="card-body">
     <h5 class="card-title"> {{$product->name}}</h5>
     <p class="card-text">${{$product->price}}</p>
