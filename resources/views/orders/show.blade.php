@@ -25,8 +25,8 @@
 </td>
 
                 <td>{{ $item->quantity }}</td>
-                <td>{{ $item->price }}</td>
-                <td>{{ $item->price * $item->quantity }}</td>
+                <td>{{ $item->formatted_price }}</td>
+                <td>{{ $item->formatted_total }}</td>
                 
             </tr>
             @endforeach

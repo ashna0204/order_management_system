@@ -50,7 +50,7 @@
             <td>
                 <ul>
                     @foreach($order->items as $item)
-                    <li>{{$item->product->name}} (x {{ $item->quantity }})</li>
+                    <li>{{$item->product->name}} (x {{ $item->quantity }} -  {{ $item->formatted_total }})</li>
                     @endforeach
                 </ul>
             </td>

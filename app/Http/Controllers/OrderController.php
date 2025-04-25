@@ -28,6 +28,7 @@ class OrderController extends Controller
         
         $products = Product::all()->map(function ($product) {
         $product->image_url = asset('storage/' . $product->image);
+        $product->formatted_price =  number_formatter($product->price);
         return $product;
         });
 
@@ -72,6 +73,10 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('items.product');
+        foreach($order->items as $item){
+         $item->formatted_price = number_formatter($item->price);  
+         $item->formatted_total = number_formatter($item->price*$item->quantity);  
+        }
         return view('orders.show', compact('order'));
     }
 
@@ -171,6 +176,11 @@ public function productStore(Request $request)
         public function productShow(){
 
             $products= Product::simplepaginate(8);
+
+            foreach($products as $product){
+                $product->formatted_price = number_formatter($product->price);
+                
+            }
             return view('products.show',compact('products'));
 
         }
@@ -263,6 +273,11 @@ public function getImageUrlAttribute()
 
     public function exportPdf(){
         $orders = Order::with('items.product')->get();
+    foreach($orders as $order)
+       foreach($order->items as $item){
+        $item->formatted_price = number_formatter($item->price);
+        $item->formatted_total = number_formatter($item->price * $item->quantity);
+    }
 
         $pdf = Pdf::loadView('orders.pdf', compact('orders'));
         return $pdf->download('orders.pdf');

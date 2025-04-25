@@ -53,9 +53,16 @@ document.getElementById('addItem').addEventListener('click', function() {
     const table = document.querySelector('#orderTable tbody');
     const row = document.createElement('tr');
 
-  let productOptions = products.map(p =>
-    `<option value="${p.id}" data-price="${p.price}" data-image="${p.image_url}">${p.name}</option>`
+let productOptions = products.map(p =>
+    `<option 
+        value="${p.id}" 
+        data-price="${p.price}" 
+        data-image="${p.image_url}" 
+        data-formatted="${p.formatted_price}">
+        ${p.name} - ${p.formatted_price}
+    </option>`
 ).join('');
+
 
 row.innerHTML = `
     <td>${counter}</td>
@@ -95,7 +102,7 @@ function updatePrices() {
         const select = row.querySelector('.product-select');
         const quantity = row.querySelector('.quantity').value;
 
-        const selectedOption = select.options[select.selectedIndex]; // ✅ You were missing this line
+        const selectedOption = select.options[select.selectedIndex]; 
         const price = parseFloat(selectedOption.dataset.price || 0);
         const total = price * quantity;
 
@@ -109,7 +116,7 @@ function updatePrices() {
             imgTag.style.display = 'none';
         }
 
-        row.querySelector('.price').innerText = price.toFixed(2);
+        row.querySelector('.price').innerText = selectedOption.dataset.formatted || price.toFixed(2);
         row.querySelector('.total').innerText = total.toFixed(2);
         totalPrice += total;
     });
