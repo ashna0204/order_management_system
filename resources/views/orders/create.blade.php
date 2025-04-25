@@ -59,7 +59,7 @@ let productOptions = products.map(p =>
         data-price="${p.price}" 
         data-image="${p.image_url}" 
         data-formatted="${p.formatted_price}">
-        ${p.name} - ${p.formatted_price}
+        ${p.name} 
     </option>`
 ).join('');
 
@@ -95,7 +95,13 @@ document.addEventListener('click', function(e) {
         updatePrices();
     }
 });
-
+function getSelectedProductIds() {
+    const selected = [];
+    document.querySelectorAll('.product-select').forEach(select => {
+        if (select.value) selected.push(select.value);
+    });
+    return selected;
+}
 function updatePrices() {
     let totalPrice = 0;
     document.querySelectorAll('#orderTable tbody tr').forEach(row => {
@@ -122,6 +128,19 @@ function updatePrices() {
     });
 
     document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+
+       // Disable selected products in other dropdowns
+    const selectedIds = getSelectedProductIds();
+    document.querySelectorAll('.product-select').forEach(select => {
+        const currentVal = select.value;
+        Array.from(select.options).forEach(option => {
+            if (option.value && option.value !== currentVal && selectedIds.includes(option.value)) {
+                option.disabled = true;
+            } else {
+                option.disabled = false;
+            }
+        });
+    });
 }
 
 </script>
