@@ -8,12 +8,21 @@
     <div class="col-md-3 mb-3 d-flex">
         <div class="card w-100">
    @if($product->image)
-            <img 
-                src="{{ asset('storage/' . $product->image) }}" 
-                alt="{{ $product->name }}" 
-                class="img-fluid rounded-top" 
-                loading="lazy"
-                style="object-fit: cover; aspect-ratio: 1/1;">
+            <picture>
+    <source 
+        srcset="{{ asset('storage/products/small_' . $product->image) }}" 
+        media="(max-width: 600px)">
+    <source 
+        srcset="{{ asset('storage/products/medium_' . $product->image) }}" 
+        media="(max-width: 1024px)">
+    <img 
+        src="{{ asset('storage/products/large_' . $product->image) }}" 
+        alt="{{ $product->name }}" 
+        class="img-fluid rounded-top" 
+        loading="lazy"
+        style="object-fit: cover; aspect-ratio: 1/1;">
+</picture>
+
         @else
             <img 
                 src="{{ asset('images/default.jpg') }}" 

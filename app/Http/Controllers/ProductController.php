@@ -1,141 +1,144 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Order;
-use App\Models\OrderItem;
+
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Barryvdh\DomPDF\Facade\Pdf;
-
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
-use App\Models\Image;
-
-
 
 class ProductController extends Controller
 {
-     public function productForm()
+    public function productForm()
     {
         return view('products.create');
-       
     }
 
-        
-public function productStore(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'price' => 'required|numeric',
-        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
-    ]);
-
-    //upload functionality
-    $image = $request->file('image');
-    //generate unique image name
-    $imageName = time() . '.' . $image->getClientOriginalExtension();
-
-    // Move original file temporarily
-    $tempPath = storage_path('app/public/temp/' . $imageName);
-    $image->move(dirname($tempPath), $imageName);
-
-    //create new manager instance
-    $imageManager = new ImageManager(new Driver());
-    // Reading the image from local dir & Resize and move to final destination
-    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
-    $resizedImage->save(public_path('storage/products/' . $imageName));
-
-    // Remove temp file (optional)
-    unlink($tempPath);
-
-    Product::create([
-        'name' => $request->name,
-        'price' => $request->price,
-        'image' => 'products/' . $imageName,
-    ]);
-
-    return redirect()->route('products.show')->with('success', 'Product added successfully');
-}
-
-
-        public function productShow(){
-
-            $products= Product::simplepaginate(8);
-
-            foreach($products as $product){
-                $product->formatted_price = number_formatter($product->price);
-                
-            }
-            return view('products.show',compact('products'));
-
-        }
-
-        public function productEdit($id){
-            $product = Product::findOrFail($id); 
-    
-            return view('products.edit', compact('product'));
-
-
-        }
-
-
- public function productUpdate(Request $request, $id)
+    public function productStore(Request $request)
     {
-    $product = Product::findOrFail($id);
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
+        ]);
 
-    $product->name = $request->name;
-    $product->price = $request->price;
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $tempPath = storage_path('app/public/temp/' . $imageName);
+        $image->move(dirname($tempPath), $imageName);
 
-    // Only update image if a new one is uploaded
-    if ($request->hasFile('image')) {
-        if ($product->image && Storage::exists('public/' . $product->image)) {
-            Storage::delete('public/' . $product->image);
+        $imageManager = new ImageManager(new Driver());
+
+        $basePath = public_path('storage/products/');
+        $sizes = [
+            'small' => [480, 320],
+            'medium' => [768, 512],
+            'large' => [1024, 768],
+        ];
+
+        foreach ($sizes as $key => [$width, $height]) {
+            $resized = $imageManager->read($tempPath)->resize($width, $height, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            $resized->save($basePath . "{$key}_$imageName");
         }
 
-         $request->validate([
-        'name' => 'required',
-        'price' => 'required|numeric',
-        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
-    ]);
+        unlink($tempPath);
 
-    //upload functionality
-    $image = $request->file('image');
-    //generate unique image name
-    $imageName = time() . '.' . $image->getClientOriginalExtension();
+        Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'image' => $imageName, // only base name
+        ]);
 
-    // Move original file temporarily
-    $tempPath = storage_path('app/public/temp/' . $imageName);
-    $image->move(dirname($tempPath), $imageName);
-
-    //create new manager instance
-    $imageManager = new ImageManager(new Driver());
-    // Reading the image from local dir & Resize and move to final destination
-    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
-    $resizedImage->save(public_path('storage/products/' . $imageName));
-
-    // Remove temp file (optional)
-    unlink($tempPath);
-    $product->image = 'products/' . $imageName;
+        return redirect()->route('products.show')->with('success', 'Product added successfully');
     }
 
-    $product->save();
+    public function productShow()
+    {
+        $products = Product::simplePaginate(8);
 
-    return redirect()->route('products.show')->with('success', 'Product updated successfully');
-}
+        foreach ($products as $product) {
+            $product->formatted_price = number_formatter($product->price);
+        }
 
-
-    public function productDelete($id){
-        $products=Product::FindOrFail($id);
-        $products->delete();
-        return redirect()->back()->with('success','product deleted successfully');
+        return view('products.show', compact('products'));
     }
-    
 
+    public function productEdit($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('products.edit', compact('product'));
+    }
 
-public function getImageUrlAttribute()
-{
-    return asset('storage/' . $this->image);
-}
+    public function productUpdate(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric',
+        ]);
+
+        $product->name = $request->name;
+        $product->price = $request->price;
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                $basePath = 'public/products/';
+                $sizes = ['small', 'medium', 'large'];
+                foreach ($sizes as $size) {
+                    Storage::delete($basePath . "{$size}_" . $product->image);
+                }
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $tempPath = storage_path('app/public/temp/' . $imageName);
+            $image->move(dirname($tempPath), $imageName);
+
+            $imageManager = new ImageManager(new Driver());
+            $basePath = public_path('storage/products/');
+            $sizes = [
+                'small' => [480, 320],
+                'medium' => [768, 512],
+                'large' => [1024, 768],
+            ];
+
+            foreach ($sizes as $key => [$width, $height]) {
+                $resized = $imageManager->read($tempPath)->resize($width, $height, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+
+                $resized->save($basePath . "{$key}_$imageName");
+            }
+
+            unlink($tempPath);
+            $product->image = $imageName;
+        }
+
+        $product->save();
+
+        return redirect()->route('products.show')->with('success', 'Product updated successfully');
+    }
+
+    public function productDelete($id)
+    {
+        $product = Product::findOrFail($id);
+
+        if ($product->image) {
+            $basePath = 'public/products/';
+            $sizes = ['small', 'medium', 'large'];
+            foreach ($sizes as $size) {
+                Storage::delete($basePath . "{$size}_" . $product->image);
+            }
+        }
+
+        $product->delete();
+        return redirect()->back()->with('success', 'Product deleted successfully');
+    }
 }
