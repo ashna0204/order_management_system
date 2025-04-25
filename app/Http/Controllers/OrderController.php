@@ -19,7 +19,17 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('items')->latest()->get();
+        $orders = Order::with('items.product')->latest()->get();
+           foreach ($orders as $order) {
+        $order->total_price = 0;
+        foreach ($order->items as $item) {
+            $item->formatted_price = number_formatter($item->price);
+            $item->formatted_total = number_formatter($item->price * $item->quantity);
+            $order->total_price += $item->price * $item->quantity;  // Add item total to order total
+            $item->image_url = asset('storage/' . $item->product->image);  // Add image URL for each product
+        }
+        $order->formatted_total_price = number_formatter($order->total_price);  // Format total price
+    }
         return view('orders.index', compact('orders'));
     }
 
@@ -130,122 +140,7 @@ class OrderController extends Controller
     }
 
     
-    public function productForm()
-    {
-        return view('products.create');
-       
-    }
-
-        
-public function productStore(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'price' => 'required|numeric',
-        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
-    ]);
-
-    //upload functionality
-    $image = $request->file('image');
-    //generate unique image name
-    $imageName = time() . '.' . $image->getClientOriginalExtension();
-
-    // Move original file temporarily
-    $tempPath = storage_path('app/public/temp/' . $imageName);
-    $image->move(dirname($tempPath), $imageName);
-
-    //create new manager instance
-    $imageManager = new ImageManager(new Driver());
-    // Reading the image from local dir & Resize and move to final destination
-    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
-    $resizedImage->save(public_path('storage/products/' . $imageName));
-
-    // Remove temp file (optional)
-    unlink($tempPath);
-
-    Product::create([
-        'name' => $request->name,
-        'price' => $request->price,
-        'image' => 'products/' . $imageName,
-    ]);
-
-    return redirect()->route('products.show')->with('success', 'Product added successfully');
-}
-
-
-        public function productShow(){
-
-            $products= Product::simplepaginate(8);
-
-            foreach($products as $product){
-                $product->formatted_price = number_formatter($product->price);
-                
-            }
-            return view('products.show',compact('products'));
-
-        }
-
-        public function productEdit($id){
-            $product = Product::findOrFail($id); 
-    
-            return view('products.edit', compact('product'));
-
-
-        }
-
-
- public function productUpdate(Request $request, $id)
-    {
-    $product = Product::findOrFail($id);
-
-    $product->name = $request->name;
-    $product->price = $request->price;
-
-    // Only update image if a new one is uploaded
-    if ($request->hasFile('image')) {
-        if ($product->image && Storage::exists('public/' . $product->image)) {
-            Storage::delete('public/' . $product->image);
-        }
-
-         $request->validate([
-        'name' => 'required',
-        'price' => 'required|numeric',
-        'image' => 'required|image|mimes:png,jpg,jpeg,svg,gif|max:2048'
-    ]);
-
-    //upload functionality
-    $image = $request->file('image');
-    //generate unique image name
-    $imageName = time() . '.' . $image->getClientOriginalExtension();
-
-    // Move original file temporarily
-    $tempPath = storage_path('app/public/temp/' . $imageName);
-    $image->move(dirname($tempPath), $imageName);
-
-    //create new manager instance
-    $imageManager = new ImageManager(new Driver());
-    // Reading the image from local dir & Resize and move to final destination
-    $resizedImage = $imageManager->read($tempPath)->resize(150, 150);
-    $resizedImage->save(public_path('storage/products/' . $imageName));
-
-    // Remove temp file (optional)
-    unlink($tempPath);
-    $product->image = 'products/' . $imageName;
-    }
-
-    $product->save();
-
-    return redirect()->route('products.show')->with('success', 'Product updated successfully');
-}
-
-
-    public function productDelete($id){
-        $products=Product::FindOrFail($id);
-        $products->delete();
-        return redirect()->back()->with('success','product deleted successfully');
-    }
-    
-
+   
 
 public function getImageUrlAttribute()
 {

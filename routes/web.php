@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -35,9 +36,9 @@ Route::resource('orders', OrderController::class);
 Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
 
 
-Route::post('/products', [App\Http\Controllers\OrderController::class, 'productStore'])->name('products.store');
+Route::post('/products', [App\Http\Controllers\ProductController::class, 'productStore'])->name('products.store');
 
-Route::prefix('products')->name('products.')->controller(OrderController::class)->group (function(){
+Route::prefix('products')->name('products.')->controller(ProductController::class)->group (function(){
     Route::get('/create','productForm')->name('create');
     Route::get('/show','productShow')->name('show');
     Route::get('/delete/{id}','productDelete')->name('delete');

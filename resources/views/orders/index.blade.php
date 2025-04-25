@@ -15,6 +15,8 @@
                 <th>Order No</th>
                 <th>Date</th>
                 <th>Customer</th>
+                <th>Total Price</th>
+                <th>Image</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -25,6 +27,17 @@
                 <td>{{ $order->id }}</td>
                 <td>{{ $order->date }}</td>
                 <td>{{ $order->customer_name }}</td>
+                  <td>{{ $order->formatted_total_price }}</td>
+                 <td>
+                @foreach($order->items as $item)
+                <div>
+                    <!-- Display product image -->
+                    <img src="{{ $item->image_url }}" alt="{{ $item->product->name }}" style="width: 50px; height: auto;">
+                    
+                </div>
+                @endforeach
+            </td>
+          
                 <td>
                     <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">View</a>
                     <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Edit</a>
