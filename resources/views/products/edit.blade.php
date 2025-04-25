@@ -13,23 +13,32 @@
         @method('PUT')
 
         <div class="form-group mb-3">
-            <label>Product Name</label>
-            <input type="text" name="name" class="form-control" value="{{$product->name}}" required>
+            <label>Product Name <i class="text-danger">*</i></label>
+            <input type="text" name="name" class="form-control" value="{{$product->name}}" >
+            @error('name')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group mb-3">
-            <label>Price</label>
-            <input type="number" name="price" class="form-control" step="0.01" value="{{$product->price}}"required>
+            <label>Price <i class="text-danger">*</i></label>
+            <input type="number" name="price" class="form-control" step="0.01" value="{{$product->price}}">
+            @error('price')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group mb-3">
-            <label>Product Image</label>
+            <label>Product Image <i class="text-danger">*</i></label>
             <input type="file" name="image"class="form-control">
             <div class="mt-2">
             @if($product->image)
             <img src="{{ asset('storage/' .$product->image)}}" width="150">
             @endif
             </div>
+            @error('image')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn btn-primary">update Product</button>

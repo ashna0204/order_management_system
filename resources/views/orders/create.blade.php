@@ -5,23 +5,32 @@
     <form action="{{ route('orders.store') }}" method="POST">
         @csrf
        <div class="form-group">
-    <label for="customer_id">Select Customer</label>
-    <select name="customer_id" id="customer-select" class="form-control" required>
+    <label for="customer_id">Select Customer <i class="text-danger">*</i></label>
+    <select name="customer_id" id="customer-select" class="form-control" >
         <option value="">-- Select Customer --</option>
         @foreach($customers as $customer)
             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
         @endforeach
     </select>
+    @error('customer_id')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
 </div>
 
 <div class="form-group">
-    <label for="address">Customer Address</label>
-    <textarea class="form-control" name="address" id="customer-address" rows="3" required readonly></textarea>
+    <label for="address">Customer Address <i class="text-danger">*</i></label>
+    <textarea class="form-control" name="address" id="customer-address" rows="3"  readonly></textarea>
+    @error('address')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
 </div>
 
         <div class="form-group">
-            <label for="date">Date</label>
-            <input type="date" class="form-control" name="date" required>
+            <label for="date">Date <i class="text-danger">*</i></label>
+            <input type="date" class="form-control" name="date" >
+            @error('date')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
         <h4>Order Items</h4>
         <table class="table table-dark table-striped" id="orderTable">
@@ -80,6 +89,12 @@ row.innerHTML = `
     <td class="price">0</td>
     <td class="total">0</td>
     <td><button type="button" class="btn btn-danger delete-row">Delete</button></td>
+    @error('products')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+    @error('quantities')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
 `;
 
 

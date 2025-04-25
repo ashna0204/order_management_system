@@ -9,18 +9,27 @@
         @method('PUT')
 
         <div class="form-group">
-            <label>Customer Name</label>
-            <input type="text" name="customer_name" class="form-control" value="{{ $order->customer_name }}" required>
+            <label>Customer Name<i class="text-danger">*</i> </label>
+            <input type="text" name="customer_name" class="form-control" value="{{ $order->customer_name }}" >
+            @error('customer_name')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group">
-            <label>Address</label>
-            <textarea name="address" class="form-control" required>{{ $order->address }}</textarea>
+            <label>Address <i class="text-danger">*</i></label>
+            <textarea name="address" class="form-control" >{{ $order->address }}</textarea>
+            @error('address')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group">
-            <label>Date</label>
-            <input type="date" name="date" class="form-control" value="{{ $order->date }}" required>
+            <label>Date <i class="text-danger">*</i></label>
+            <input type="date" name="date" class="form-control" value="{{ $order->date }}" >
+            @error('date')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
         </div>
 
         <h4>Order Items</h4>
@@ -47,11 +56,20 @@
                                     {{ $product->name }}
                                 </option>
                             @endforeach
+                            @error('products')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
                         </select>
                     </td>
                     <td><input type="number" name="quantities[]" class="form-control quantity" value="{{ $item->quantity }}"></td>
                     <td class="price">{{ $item->price }}</td>
                     <td class="total">{{ $item->price * $item->quantity }}</td>
+                    @error('quantities')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                    @error('price')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
                     <td><button type="button" class="btn btn-danger delete-row">Delete</button></td>
                 </tr>
                 @endforeach
