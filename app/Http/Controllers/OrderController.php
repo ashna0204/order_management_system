@@ -26,7 +26,7 @@ class OrderController extends Controller
             $item->formatted_price = number_formatter($item->price);
             $item->formatted_total = number_formatter($item->price * $item->quantity);
             $order->total_price += $item->price * $item->quantity;  // Add item total to order total
-            $item->image_url = asset('storage/' . $item->product->image);  // Add image URL for each product
+            $item->image_url = asset('storage/products/medium_' . $item->product->image);  // Add image URL for each product
         }
         $order->formatted_total_price = number_formatter($order->total_price);  // Format total price
     }
@@ -37,8 +37,10 @@ class OrderController extends Controller
     {
         
         $products = Product::all()->map(function ($product) {
-        $product->image_url = asset('storage/' . $product->image);
+        $product->image_url = asset('storage/products/medium_' . $product->image);
+
         $product->formatted_price =  number_formatter($product->price);
+        $product->formatted_totalprice =  number_formatter($product->totalprice);
         return $product;
         });
 
@@ -142,10 +144,7 @@ class OrderController extends Controller
     
    
 
-public function getImageUrlAttribute()
-{
-    return asset('storage/' . $this->image);
-}
+
 
     public function trash(){
         $orders =Order::onlyTrashed()->get();

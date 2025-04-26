@@ -1,0 +1,41 @@
+[33mcommit 62b1ed53a7a18ef12ea0eada41e9f35bf86247ac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Fri Apr 25 16:17:31 2025 +0530
+
+    Added functionality to resize uploaded product images into three sizes: small, medium, and large
+
+[33mcommit 7262d876ac07471a3362a769aab5f9eb9c786943[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Fri Apr 25 12:36:33 2025 +0530
+
+    modified index page
+
+[33mcommit af6f622b827ae6a31bf5aa2851cfbf8c2234e7fb[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Fri Apr 25 11:17:05 2025 +0530
+
+    tweak error messages for consistency
+
+[33mcommit 9fd82f955dad7397c1b8dead585f862674d6e6ad[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Fri Apr 25 10:57:02 2025 +0530
+
+     Added logic to disable already selected products in other dropdowns
+
+[33mcommit c392a8e0fe45622c379ccfff1b229658a470bedc[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Fri Apr 25 09:48:08 2025 +0530
+
+    added reusable number format function
+
+[33mcommit 647748d1f7b0dc96a4c5d1874ec5c6482c093d37[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Wed Apr 23 15:23:48 2025 +0530
+
+      added image resizing with Intervention
+
+[33mcommit ff252e1617b04634873f23596614dca4734f3040[m
+Author: ashna <ashnacp0204@gmail.com>
+Date:   Tue Apr 22 09:31:16 2025 +0530
+
+    added project

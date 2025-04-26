@@ -33,8 +33,8 @@
             <input type="file" name="image"class="form-control">
             <div class="mt-2">
             @if($product->image)
-            <img src="{{ asset('storage/' .$product->image)}}" width="150">
-            @endif
+<img src="{{ $product->image_url }}" width="150">
+@endif
             </div>
             @error('image')
                 <div class="alert alert-danger">{{ $message }}</div>

@@ -5,7 +5,7 @@
     <form action="{{ route('orders.store') }}" method="POST">
         @csrf
        <div class="form-group">
-    <label for="customer_id">Select Customer <i class="text-danger">*</i></label>
+    <label for="customer-select">Select Customer <i class="text-danger">*</i></label>
     <select name="customer_id" id="customer-select" class="form-control" >
         <option value="">-- Select Customer --</option>
         @foreach($customers as $customer)
@@ -18,7 +18,7 @@
 </div>
 
 <div class="form-group">
-    <label for="address">Customer Address <i class="text-danger">*</i></label>
+    <label for="customer-address">Customer Address <i class="text-danger">*</i></label>
     <textarea class="form-control" name="address" id="customer-address" rows="3"  readonly></textarea>
     @error('address')
         <div class="alert alert-danger">{{ $message }}</div>
@@ -27,7 +27,7 @@
 
         <div class="form-group">
             <label for="date">Date <i class="text-danger">*</i></label>
-            <input type="date" class="form-control" name="date" >
+            <input type="date" class="form-control" id="date"name="date" >
             @error('date')
                 <div class="alert alert-danger">{{ $message }}</div>
             @enderror
@@ -132,6 +132,7 @@ function updatePrices() {
         const imgTag = row.querySelector('.product-preview');
         if (image) {
             imgTag.src = image;
+
             imgTag.style.display = 'block';
         } else {
             imgTag.style.display = 'none';

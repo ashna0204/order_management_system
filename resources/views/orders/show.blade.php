@@ -16,9 +16,11 @@
             @foreach ($order->items as $item)
             <tr>
                 <td>{{ $item->product->name }}</td>
-               <td class="text-center">
-    @if ($item->product && $item->product->image)
-        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" width="100">
+              <td class="text-center">
+    @if ($item->product)
+        <img src="{{ $item->product->image_url }}" 
+             alt="{{ $item->product->name }}" 
+             width="100">
     @else
         No image
     @endif

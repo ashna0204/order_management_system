@@ -15,5 +15,14 @@ class Product extends Model
    public function items() {
     return $this->hasMany(OrderItem::class);
 }
+
+public function getImageUrlAttribute()
+{
+    if (!$this->image) {
+        return asset('images/default-product.png'); // fallback image
+    }
+    return asset('storage/products/medium_' . $this->image);
+}
+
   
 }
