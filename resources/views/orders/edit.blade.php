@@ -38,6 +38,7 @@
                 <tr>
                     <th>Sl. No</th>
                     <th>Product</th>
+                    <th>Image</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
@@ -51,19 +52,24 @@
                     <td>
                         <select name="products[]" class="form-control product-select">
                             @foreach($products as $product)
-                                <option value="{{ $product->id }}" data-price="{{ $product->price }}"
-                                    {{ $item->product_id == $product->id ? 'selected' : '' }}>
-                                    {{ $product->name }}
-                                </option>
+                               <option value="{{ $product->id }}" data-price="{{ $product->price }}" data-image="{{ $product->image_url }}">
+    {{ $product->name }}
+</option>
+
                             @endforeach
                             @error('products')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
                         </select>
                     </td>
+                    <td class="image-cell">
+    <img src="{{ $item->product->image_url }}" alt="Product Image" width="80">
+</td>
+
                     <td><input type="number" name="quantities[]" class="form-control quantity" value="{{ $item->quantity }}"></td>
-                    <td class="price">{{ $item->price }}</td>
-                    <td class="total">{{ $item->price * $item->quantity }}</td>
+                   <td class="price">{{ $item->formatted_price }}</td>
+<td class="total">{{ $item->formatted_total }}</td>
+
                     @error('quantities')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
@@ -111,33 +117,68 @@ function updatePrices() {
     document.getElementById('totalPrice').innerText = total.toFixed(2);
 }
 
-document.getElementById('addItem').addEventListener('click', function () {
+document.getElementById('addItem').addEventListener('click', function() {
     const table = document.querySelector('#orderTable tbody');
     const row = document.createElement('tr');
 
-    row.innerHTML = `
-        <td>${counter}</td>
-        <td>
-            <select name="products[]" class="form-control product-select">
-                ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name}</option>`).join('')}
-            </select>
+let productOptions = products.map(p =>
+    `<option 
+        value="${p.id}" 
+        data-price="${p.price}" 
+        data-image="${p.image_url}" 
+        data-formatted="${p.formatted_price}">
+        ${p.name} 
+    </option>`
+).join('');
+
+
+row.innerHTML = `
+    <td>${counter}</td>
+    <td>
+        <select name="products[]" class="form-control product-select">
+            <option value="">-- Select Product --</option>
+            ${productOptions}
+        </select>
         </td>
-        <td><input type="number" name="quantities[]" class="form-control quantity" min="1" value="1"></td>
-        <td class="price">0</td>
-        <td class="total">0</td>
-        <td><button type="button" class="btn btn-danger delete-row">Delete</button></td>
-    `;
+        <td class="image-cell">
+        <img src="" class="product-preview mt-2" style="display:none; max-width: 60px;">
+  
+    </td>
+    <td><input type="number" name="quantities[]" class="form-control quantity" min="1" value="1"></td>
+    <td class="price">0</td>
+    <td class="total">0</td>
+    <td><button type="button" class="btn btn-danger delete-row">Delete</button></td>
+    @error('products')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+    @error('quantities')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+`;
+
 
     table.appendChild(row);
     counter++;
     updatePrices();
 });
-
 // Ensure prices are updated on quantity or product change
 document.addEventListener('change', function (e) {
-    if (e.target.classList.contains('quantity') || e.target.classList.contains('product-select')) {
-        updatePrices();
+  if (e.target.classList.contains('product-select')) {
+    const select = e.target;
+    const row = select.closest('tr');
+    const imageUrl = select.options[select.selectedIndex].dataset.image;
+
+    const image = row.querySelector('td.image-cell img');
+    if (imageUrl && image) {
+        image.src = imageUrl;
+        image.style.display = 'block'; // Make sure image becomes visible
+    } else if (image) {
+        image.src = '';
+        image.style.display = 'none';
     }
+}
+
+    updatePrices();
 });
 
 // Handle delete row action

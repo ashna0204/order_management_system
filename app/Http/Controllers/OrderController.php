@@ -94,8 +94,19 @@ class OrderController extends Controller
 
     public function edit(Order $order)
     {
-        $products = Product::all();
-        $order->load('items');
+        $products = Product::all()->map(function ($product) {
+            $product->image_url = asset('storage/products/medium_' . $product->image);
+            $product->formatted_price = number_formatter($product->price); // Add formatted price
+            return $product;
+        });
+
+        $order->load('items.product');
+        foreach ($order->items as $item) {
+            $item->image_url = asset('storage/products/medium_' . $item->product->image);
+            $item->formatted_price = number_formatter($item->price); // Add formatted price
+            $item->formatted_total = number_formatter($item->price * $item->quantity); // Add formatted total
+        }
+
         return view('orders.edit', compact('order', 'products'));
     }
 
