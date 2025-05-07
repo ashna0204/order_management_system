@@ -19,6 +19,7 @@ class OrderController extends Controller
 {
     public function index()
     {
+        
         $orders = Order::with('items.product')->latest()->get();
            foreach ($orders as $order) {
         $order->total_price = 0;
@@ -49,38 +50,37 @@ class OrderController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'address' => 'required',
-            'date' => 'required|date',
-            'products' => 'required|array',
-            'quantities' => 'required|array',
+{
+    $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'customer_address' => 'required|string',
+        'date' => 'required|date',
+        'products' => 'required|array',
+        'quantities' => 'required|array',
+    ]);
+
+    $order = Order::create([
+        'customer_name' => $request->customer_name,
+        'address' => $request->customer_address,
+        'date' => $request->date,
+    ]);
+
+    foreach ($request->products as $index => $productId) {
+        $product = Product::find($productId);
+        $quantity = $request->quantities[$index];
+        $price = $product->price;
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $productId,
+            'quantity' => $quantity,
+            'price' => $price,
         ]);
-
-        $customer = Customer::find($request->customer_id);
-
-        $order = Order::create([
-            'customer_name' => $customer->name,
-            'address' => $request->address,
-            'date' => $request->date,
-        ]);
-
-        foreach ($request->products as $index => $productId) {
-            $product = Product::find($productId);
-            $quantity = $request->quantities[$index];
-            $price = $product->price;
-
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'price' => $price,
-            ]);
-        }
-
-        return redirect()->route('orders.index')->with('success', 'Order created successfully');
     }
+
+    return redirect()->route('orders.index')->with('success', 'Order created successfully');
+}
+
 
     public function show(Order $order)
     {

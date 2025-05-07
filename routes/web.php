@@ -1,52 +1,68 @@
 <?php
-
+// In your routes/web.php file
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+// Simple home route
+Route::get('/', [OrderController::class, 'index'])->middleware(['auth']);
 
-Route::get('/', [OrderController::class,'index']);
+// Register the trash route BEFORE the resource route to prevent conflicts
+Route::get('/orders/trash', [OrderController::class, 'trash'])
+    ->name('orders.trash')
+    ->middleware(['auth']);
 
-// Route::get('/', [OrderController::class, 'index'])->name('orders.index');
-// Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-// Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-// Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-// Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
-// Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
-// Route::get('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'getCustomer']);
+// Add these custom routes BEFORE the resource route
+Route::post('/orders/{id}/restore', [OrderController::class, 'restore'])
+    ->name('orders.restore')
+    ->middleware(['auth']);
 
-// Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+Route::delete('/orders/{id}/forceDelete', [OrderController::class, 'forceDelete'])
+    ->name('orders.forceDelete')
+    ->middleware(['auth']);
 
+// Then register the resource route
+Route::resource('orders', OrderController::class)->middleware(['auth']);
 
-Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group (function(){
-
-    Route::get('/trash','trash')->name('trash');
-    Route::post('/{id}/restore','restore')->name('restore');
-    Route::delete('/{id}/forceDelete','forceDelete')->name('forceDelete');
-    Route::delete('/{id}','destroy')->name('destroy');
-    Route::get('/export-pdf','exportPdf')->name('exportPdf');
-
-});
-
-Route::resource('orders', OrderController::class);
-
-// Define the route for retrieving a customer
-Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
-
-
-Route::post('/products', [App\Http\Controllers\ProductController::class, 'productStore'])->name('products.store');
-
-Route::prefix('products')->name('products.')->controller(ProductController::class)->group (function(){
-    Route::get('/create','productForm')->name('create');
-    Route::get('/show','productShow')->name('show');
-    Route::get('/delete/{id}','productDelete')->name('delete');
-    Route::get('/edit/{id}','productEdit')->name('edit');
-    Route::put('/update/{id}','productUpdate')->name('update');
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/orders/export-pdf', [OrderController::class, 'exportPdf'])->name('orders.exportPdf');
     
-
-   
+    // Admin routes for managing products
+    Route::prefix('products')->name('products.')->controller(ProductController::class)->group(function() {
+        Route::get('/create', 'productForm')->name('create');
+        Route::get('/show', 'productShow')->name('show');
+        Route::get('/delete/{id}', 'productDelete')->name('delete');
+        Route::get('/edit/{id}', 'productEdit')->name('edit');
+        Route::put('/update/{id}', 'productUpdate')->name('update');
+    });
 });
 
+// User routes
+Route::middleware('auth')->group(function () {
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/show', [ProductController::class, 'productShow'])->name('products.show');
+    
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
+// Public routes
+Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
+Route::post('/products', [ProductController::class, 'productStore'])->name('products.store');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard/admin', function () {
+    return view('admin.dashboard');
+})->middleware('auth', 'role:admin');
+
+require __DIR__.'/auth.php';

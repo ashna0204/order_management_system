@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('content')
+@role('admin')
 <a href="{{route('products.create')}}" class="btn btn-primary mb-3">Add Products</a>
+@endrole
 <div class="container">
     <div class="row">
    
@@ -34,8 +36,10 @@
   <div class="card-body">
     <h5 class="card-title"> {{$product->name}}</h5>
     <p class="card-text">{{$product->formatted_price}}</p>
+    @role("admin")
     <a href="{{route('products.delete',$product->id)}}" class="btn btn-primary">Delete</a>
     <a href="{{route('products.edit',$product->id)}}" class="btn btn-primary">Edit</a>
+    @endrole
   </div>
   
   </div>

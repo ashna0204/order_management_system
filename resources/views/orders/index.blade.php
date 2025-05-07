@@ -3,8 +3,9 @@
 @section('content')
 <div class="container">
    
-        
+        @role('user')
     <a href="{{route('orders.create')}}" class="btn btn-primary mb-3">Add Orders</a>
+    @endrole
      <a href="{{ route('orders.exportPdf') }}" class="btn btn-primary mb-3">Export Orders to PDF</a>
 
      <h1>Order List</h1>
@@ -40,12 +41,14 @@
           
                 <td>
                     <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">View</a>
+                    @role('user')
                     <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning">Edit</a>
                     <form action="{{ route('orders.destroy', $order->id) }}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
+                     @endrole
                 </td>
             </tr>
             @endforeach
