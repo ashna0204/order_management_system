@@ -17,22 +17,48 @@ use App\Models\Image;
 
 class OrderController extends Controller
 {
-    public function index()
+     public function index()
     {
-        
-        $orders = Order::with('items.product')->latest()->get();
-           foreach ($orders as $order) {
-        $order->total_price = 0;
-        foreach ($order->items as $item) {
-            $item->formatted_price = number_formatter($item->price);
-            $item->formatted_total = number_formatter($item->price * $item->quantity);
-            $order->total_price += $item->price * $item->quantity;  // Add item total to order total
-            $item->image_url = asset('storage/products/medium_' . $item->product->image);  // Add image URL for each product
+        $user = auth()->user();
+
+        if ($user->hasRole('admin')){
+            // Admin can view all orders
+            $orders = Order::with('items.product')->latest()->get();
+        } else {
+            // Regular users can only view their own orders
+            $orders = Order::with('items.product')->where('user_id', $user->id)->latest()->get();
         }
-        $order->formatted_total_price = number_formatter($order->total_price);  // Format total price
-    }
+
+        foreach ($orders as $order) {
+            $order->total_price = 0;
+            foreach ($order->items as $item) {
+                $item->formatted_price = number_formatter($item->price);
+                $item->formatted_total = number_formatter($item->price * $item->quantity);
+                $order->total_price += $item->price * $item->quantity;  // Add item total to order total
+                $item->image_url = asset('storage/products/medium_' . $item->product->image);  // Add image URL for each product
+            }
+            $order->formatted_total_price = number_formatter($order->total_price);  // Format total price
+        }
+
         return view('orders.index', compact('orders'));
     }
+
+    // public function index()
+    // {
+        
+    //     $orders = Order::with('items.product')->latest()->get();
+    //        foreach ($orders as $order) {
+    //     $order->total_price = 0;
+    //     foreach ($order->items as $item) {
+    //         $item->formatted_price = number_formatter($item->price);
+    //         $item->formatted_total = number_formatter($item->price * $item->quantity);
+    //         $order->total_price += $item->price * $item->quantity;  // Add item total to order total
+    //         $item->image_url = asset('storage/products/medium_' . $item->product->image);  // Add image URL for each product
+    //     }
+    //     $order->formatted_total_price = number_formatter($order->total_price);  // Format total price
+    // }
+    //     return view('orders.index', compact('orders'));
+    // }
 
     public function create()
     {
@@ -60,6 +86,7 @@ class OrderController extends Controller
     ]);
 
     $order = Order::create([
+        'user_id' => auth()->id(),
         'customer_name' => $request->customer_name,
         'address' => $request->customer_address,
         'date' => $request->date,
@@ -158,8 +185,9 @@ class OrderController extends Controller
 
 
     public function trash(){
-        $orders =Order::onlyTrashed()->get();
-        return view('orders.trash',compact('orders'));
+        $user = auth()->user();
+        $orders = Order::onlyTrashed()->where('user_id', $user->id)->get();
+        return view('orders.trash', compact('orders'));
     }
 
     public function forceDelete($id){

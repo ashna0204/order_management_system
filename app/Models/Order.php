@@ -10,7 +10,7 @@ class Order extends Model
     use SoftDeletes;
     
 
-    protected $fillable = ['customer_name', 'address', 'date'];
+    protected $fillable = ['user_id','customer_name', 'address', 'date'];
 
 
 
@@ -19,6 +19,9 @@ class Order extends Model
 
     
 }
+public function user(){
+        return $this->belongsTo(User::class);
+    }
 
 }
 
