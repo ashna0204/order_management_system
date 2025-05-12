@@ -34,8 +34,19 @@
     <div class="bg-dark text-white p-3" style="width: 250px; height: 100vh; position:fixed;">
         <h5 class="mb-4">Order Management</h5>
         <ul class="nav flex-column">
+            @role('admin')
             <li class="nav-item">
-                <a class="nav-link text-white mb-3" href="{{route('orders.index')}}"> <i class="fas fa-tachometer-alt"></i> Home</a>
+                <a class="nav-link text-white mb-3" href="{{route('admin.dashboard')}}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            </li>
+            @else
+            @role('user')
+            <li class="nav-item">
+                <a class="nav-link text-white mb-3" href="{{route('user.dashboard')}}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            </li>
+            @endrole
+            @endrole
+            <li class="nav-item">
+                <a class="nav-link text-white mb-3" href="{{route('orders.index')}}"> <i class="fas fa-shopping-cart"></i> Orders</a>
             </li>
               @role('user')
             <li class="nav-item">
@@ -62,7 +73,7 @@
 
     <!-- Main Content -->
     <div class="d-flex flex-column min-vh-100 container-fluid p-0" style="margin-left:250px;">
-          <div class="p-4">
+          <div class="p-2">
               @include('layouts.header')
           </div>
 

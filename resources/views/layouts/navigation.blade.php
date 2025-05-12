@@ -1,6 +1,9 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark text-white  border-bottom">
+<nav class="navbar navbar-expand-lg navbar-light mb-2 text-dark ">
     <div class="container">
-      
+        <div class="d-flex flex-column">
+            <h5 class="mb-0">Dashboard</h5>
+            <small>{{ \Carbon\Carbon::now()->format('l, F j, Y') }}</small>
+        </div>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -9,13 +12,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        {{ __('Dashboard') }}
-                    </a>
-                </li>
-            </ul>
+            
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ms-auto">

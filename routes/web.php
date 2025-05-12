@@ -7,9 +7,28 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\UserDashboardController;
 
 // Simple home route
-Route::get('/', [OrderController::class, 'index'])->middleware(['auth']);
+Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->hasRole('user')) {
+            return redirect()->route('user.dashboard');
+        }
+    }
+    return redirect()->route('login');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/user/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+});
 
 // Register the trash route BEFORE the resource route to prevent conflicts
 Route::get('/orders/trash', [OrderController::class, 'trash'])
@@ -58,7 +77,14 @@ Route::get('/customers/{id}', [CustomerController::class, 'getCustomer']);
 Route::post('/products', [ProductController::class, 'productStore'])->name('products.store');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (auth()->check()) {
+        if (auth()->user()->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->hasRole('user')) {
+            return redirect()->route('user.dashboard');
+        }
+    }
+    return redirect()->route('login');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard/admin', function () {
