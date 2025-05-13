@@ -214,6 +214,7 @@ class OrderController extends Controller
 
         $pdf = Pdf::loadView('orders.pdf', compact('orders'));
         return $pdf->download('orders.pdf');
+         
     }
 
     public function updateStatus(Request $request, Order $order){

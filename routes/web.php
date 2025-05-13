@@ -49,7 +49,7 @@ Route::resource('orders', OrderController::class)->middleware(['auth']);
 
 // Admin routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/orders/export-pdf', [OrderController::class, 'exportPdf'])->name('orders.exportPdf');
+    Route::get('/export-pdf', [OrderController::class, 'exportPdf'])->name('orders.exportPdf');
     
     // Admin routes for managing products
     Route::prefix('products')->name('products.')->controller(ProductController::class)->group(function() {

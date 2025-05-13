@@ -6,8 +6,9 @@
         @role('user')
     <a href="{{route('orders.create')}}" class="btn btn-primary mb-3">Add Orders</a>
     @endrole
+    
     @role('admin')
-    <a href="{{ route('orders.pdf') }}" class="btn btn-primary mb-3">Export Orders to PDF</a>
+    <a href="{{ route('orders.exportPdf') }}" class="btn btn-primary mb-3">Export Orders to PDF</a>
      @endrole
 
      <h1>Order List</h1>
