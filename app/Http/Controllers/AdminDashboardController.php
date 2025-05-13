@@ -29,7 +29,7 @@ class AdminDashboardController extends Controller
             })
             ->groupBy('product_id')
             ->orderBy('total_sold', 'desc')
-            ->take(5)
+            ->take(3)
             ->get();
         
         foreach ($topSellingProducts as $product) {

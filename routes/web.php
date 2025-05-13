@@ -87,8 +87,7 @@ Route::get('/dashboard', function () {
     return redirect()->route('login');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard/admin', function () {
-    return view('admin.dashboard');
-})->middleware('auth', 'role:admin');
+
+Route::patch('orders/{order}/status',[OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
 require __DIR__.'/auth.php';

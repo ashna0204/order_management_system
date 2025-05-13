@@ -215,4 +215,13 @@ class OrderController extends Controller
         $pdf = Pdf::loadView('orders.pdf', compact('orders'));
         return $pdf->download('orders.pdf');
     }
+
+    public function updateStatus(Request $request, Order $order){
+        $request->validate([ 'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled']);
+
+        $order->status = $request->status;
+        $order->save();
+
+        return redirect()->back()->with('success', 'Order status updated');
+    }
 }

@@ -38,7 +38,7 @@
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Growth</h5>
-                    <p class="card-text">k</p>
+                    <p class="card-text">  </p>
                 </div>
             </div>
         </div>
