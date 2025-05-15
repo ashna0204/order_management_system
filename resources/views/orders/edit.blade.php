@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Edit Order #{{ $order->id }}</h2>
+    <h2>Edit Order - {{ $order->id }}</h2>
 
     <form action="{{ route('orders.update', $order->id) }}" method="POST">
         @csrf
@@ -82,9 +82,9 @@
             </tbody>
         </table>
 
-        <button type="button" id="addItem" class="btn btn-secondary">Add Item</button>
+        <button type="button" id="addItem" class="btn btn-secondary" style="background-color: #9B7EBD;">Add Item</button>
         <h5>Total Price: <span id="totalPrice">0</span></h5>
-        <button type="submit" class="btn btn-primary">Update Order</button>
+        <button type="submit" class="btn " style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Update Order</button>
     </form>
 </div>
 

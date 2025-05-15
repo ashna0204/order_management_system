@@ -4,7 +4,7 @@
 <div class="container" >
    
         @role('user')
-    <a href="{{route('orders.create')}}" class="btn btn-primary mb-3">Add Orders</a>
+    <a href="{{route('orders.create')}}" class="btn mb-3" style="background-color: #9B7EBD; color: white;">Add Orders</a>
     @endrole
     
     @role('admin')
@@ -44,19 +44,21 @@
             </td>
           
                 <td>
-                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-info">
-                        <i class="fas fa-eye"></i>
+                    <a href="{{ route('orders.show', $order->id) }}" class="btn" style="color:white;" title="View Order">
+                        <i class="fas fa-eye" style="color:black;" onmouseover="this.style.color='blue';" onmouseout="this.style.color='black';"></i>
                     </a>
                     @role('user')
-                    <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-warning"><i class="fas fa-pen"></i></a>
+                    <a href="{{ route('orders.edit', $order->id) }}" class="btn" title="Edit Order">
+                        <i class="fas fa-pen" style="color:black;" onmouseover="this.style.color='green';" onmouseout="this.style.color='black';"></i>
+                    </a>
                     <form action="{{ route('orders.destroy', $order->id) }}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i>
+                        <button type="submit" class="btn" title="Delete Order">
+                            <i class="fas fa-trash" style="color:black;" onmouseover="this.style.color='red';" onmouseout="this.style.color='black';"></i>
                         </button>
                     </form>
-                     @endrole
+                    @endrole
                 </td>
                 @role('user')
                 <td>
@@ -67,7 +69,7 @@
                         @elseif($order->status == 'shipped') bg-secondary 
                         @elseif($order->status == 'delivered') bg-success 
                         @elseif($order->status == 'cancelled') bg-danger 
-                        @endif" style="width: 100px; display: inline-block; text-align: center;">
+                        @endif" style="width: 100px; display: inline-block; text-align: center; padding:10px; color:white;">
                         {{$order->status}}
                     </span>
                 </td>

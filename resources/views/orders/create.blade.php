@@ -31,7 +31,7 @@
                 @enderror
             </div>
             <h4>Order Items</h4>
-            <table class="table table-dark table-striped" id="orderTable">
+            <table class="table table-light table-striped" id="orderTable">
                 <thead>
                     <tr>
                         <th>Sl. No</th>
@@ -46,9 +46,9 @@
                 <tbody>
                 </tbody>
             </table>
-            <button type="button" id="addItem" class="btn btn-secondary">Add Item</button>
+            <button type="button" id="addItem" class="btn btn-secondary" style="background-color: #9B7EBD;">Add Item</button>
             <h5>Total Price: <span id="totalPrice">0</span></h5>
-            <button type="submit" class="btn btn-success">Submit Order</button>
+            <button type="submit" class="btn btn-primary" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Submit Order</button>
         </form>
     </div>
 

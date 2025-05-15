@@ -4,8 +4,8 @@
 <div class="container">
     <div class="row">
         <!-- Number of Customers -->
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+        <div class="col-md-4">
+            <div class="card text-white mb-3" style="background-color: #7F55B1;">
                 <div class="card-body">
                     <h5 class="card-title">No. of Customers</h5>
                     <p class="card-text">{{$customerCount}}</p>
@@ -14,8 +14,8 @@
         </div>
         
         <!-- Number of Orders -->
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+        <div class="col-md-4">
+            <div class="card text-white mb-3" style="background-color: #9B7EBD;">
                 <div class="card-body">
                     <h5 class="card-title">No. of Orders</h5>
                     <p class="card-text">{{$orderCount}}</p>
@@ -24,31 +24,17 @@
         </div>
         
         <!-- Total Revenue -->
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
+        <div class="col-md-4">
+            <div class="card text-white mb-3" style="background-color: #F49BAB;">
                 <div class="card-body">
                     <h5 class="card-title">Total Revenue</h5>
                     <p class="card-text">{{$fomattedRevenue}}</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Growth -->
-        <div class="col-md-3">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Growth</h5>
-                    <p class="card-text">  </p>
-                </div>
-            </div>
-        </div>
     </div>
-
-    
-
-    
-
-
+        
+   
 
 {{-- Sales Chart --}}
 <!-- <div class="container mx-auto mt-5 py-4">
@@ -253,8 +239,8 @@
                 data: @json($ordersChartData->pluck('total')),
                 backgroundColor: @json($ordersChartData->pluck('color')),
                 borderColor: 'rgb(54, 162, 235)',
-                borderWidth: 1,
-                barThickness: 20
+                borderWidth: 3,
+                barThickness: 50
             }]
         },
         options: {

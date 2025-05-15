@@ -3,7 +3,7 @@
 
 
 <div class="container">
-     <a href="{{route('orders.index')}}" class="btn btn-primary mb-3">Back to home</a>
+     <a href="{{route('orders.index')}}" class="btn mb-3" style="background-color: #9B7EBD; color:white;">Back to home</a>
 
 <table class="table table-bordered">
 
@@ -29,12 +29,12 @@
             <td>
                 <form method="POST" action="{{route('orders.restore',$order->id)}}" style="display: inline">
                     @csrf
-                    <button  class="btn btn-success">Restore</button>
+                    <button  class="btn btn-success" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" >Restore</button>
                 </form>
                 <form method="POST" action="{{route('orders.forceDelete',$order->id)}}" style="display: inline">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-danger" onClick="return confirm('permanently delete this order?">Delete permanently</button>
+                <button type="submit" class="btn btn-danger" style=" color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onClick="return confirm('permanently delete this order?">Delete permanently</button>
                 </form>
             </td>
         </tr>
